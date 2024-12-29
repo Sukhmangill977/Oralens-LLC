@@ -1,197 +1,197 @@
 /* Global Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  /* Page Container */
-  .organization-list-container {
-    background: linear-gradient(135deg, #4B79A1, #283E51); /* Refined gradient background */
-    padding: 30px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    color: white;
-  }
-  
-  /* Title */
-  .organization-list-container h2 {
-    font-size: 2.8rem;
-    margin-bottom: 30px;
-    font-weight: 600;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  /* Add Organization Button */
-  button {
-    background-color: #2E8B57; /* Modern green */
-    color: white;
-    font-size: 1.2rem;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #228B22; /* Darker green */
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-  }
-  
-  button:focus {
-    outline: none;
-  }
-  
-  /* Organization List */
-  ul {
-    list-style: none;
-    width: 100%;
-    max-width: 1000px;
-    padding: 0;
-  }
-  
-  li {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease;
-    transform: translateY(0);
-  }
-  
-  li:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-  
-  /* Organization Name */
-  li strong {
-    font-size: 1.6rem;
-    color: #2E8B57; /* Green */
-    text-transform: capitalize;
-    font-weight: 500;
-  }
-  
-  /* Organization Details */
-  li span {
-    color: #444;
-    font-size: 1rem;
-    margin-left: 12px;
-  }
-  
-  /* Team Container */
-  ul li .team-container {
-    margin-top: 20px;
-    padding: 12px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-  }
-  
-  /* Hover Effects for Teams */
-  ul li .team-container ul li:hover {
-    background-color: #e0e0e0;
-    cursor: pointer;
-    transform: translateY(-2px);
-  }
-  
-  /* Adding smooth animations */
-  @keyframes fadeInUp {
-    from {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Page Container */
+.organization-list-container {
+  background: linear-gradient(135deg, #4B79A1, #283E51); /* Refined gradient background */
+  padding: 30px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  color: black; /* Changed text color to black */
+}
+
+/* Title */
+.organization-list-container h2 {
+  font-size: 2.8rem;
+  margin-bottom: 30px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: black; /* Changed text color to black */
+}
+
+/* Add Organization Button */
+button {
+  background-color: #2E8B57; /* Modern green */
+  color: white;
+  font-size: 1.2rem;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #228B22; /* Darker green */
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+button:focus {
+  outline: none;
+}
+
+/* Organization List */
+ul {
+  list-style: none;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0;
+}
+
+li {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Organization Name */
+li strong {
+  font-size: 1.6rem;
+  color: #2E8B57; /* Green */
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+/* Organization Details */
+li span {
+  color: #444;
+  font-size: 1rem;
+  margin-left: 12px;
+}
+
+/* Team Container */
+ul li .team-container {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Hover Effects for Teams */
+ul li .team-container ul li:hover {
+  background-color: #e0e0e0;
+  cursor: pointer;
+  transform: translateY(-2px);
+}
+
+/* Adding smooth animations */
+@keyframes fadeInUp {
+  from {
       opacity: 0;
       transform: translateY(10px);
-    }
-    to {
+  }
+  to {
       opacity: 1;
       transform: translateY(0);
-    }
   }
-  
+}
+
+.organization-list-container {
+  animation: fadeInUp 1s ease-out;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
   .organization-list-container {
-    animation: fadeInUp 1s ease-out;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .organization-list-container {
       padding: 20px;
-    }
-  
-    .organization-list-container h2 {
+  }
+
+  .organization-list-container h2 {
       font-size: 2rem;
-    }
-  
-    button {
+  }
+
+  button {
       font-size: 1rem;
       padding: 10px 20px;
-    }
-  
-    ul {
+  }
+
+  ul {
       width: 100%;
-    }
-  
-    li {
+  }
+
+  li {
       flex-direction: column;
       align-items: flex-start;
       padding: 15px;
-    }
-  
-    li strong {
+  }
+
+  li strong {
       font-size: 1.4rem;
-    }
-  
-    li span {
+  }
+
+  li span {
       font-size: 0.9rem;
       margin-left: 0;
-    }
   }
-  
-  @media (max-width: 480px) {
-    .organization-list-container {
+}
+
+@media (max-width: 480px) {
+  .organization-list-container {
       padding: 15px;
-    }
-  
-    .organization-list-container h2 {
+  }
+
+  .organization-list-container h2 {
       font-size: 1.8rem;
-    }
-  
-    button {
+  }
+
+  button {
       font-size: 0.9rem;
       padding: 8px 15px;
-    }
-  
-    ul {
+  }
+
+  ul {
       width: 100%;
-    }
-  
-    li {
+  }
+
+  li {
       flex-direction: column;
       align-items: flex-start;
       padding: 12px;
-    }
-  
-    li strong {
+  }
+
+  li strong {
       font-size: 1.2rem;
-    }
-  
-    li span {
+  }
+
+  li span {
       font-size: 0.8rem;
       margin-left: 0;
-    }
   }
-  
+}

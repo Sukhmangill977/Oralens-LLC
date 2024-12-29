@@ -1,5 +1,9 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
+import { db, storage } from './firebase'; // Import Firebase setup
+
 const app = express();
 
 // Enable CORS for all origins
@@ -8,140 +12,185 @@ app.use(cors());
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 
-// Dummy data for organizations, teams, and members
-let organizations = [
-  {
-    id: 1,
-    name: "Organization 1",
-    email: "org1@example.com",
-    location: "New York",
-    teams: [
-      {
-        id: 1,
-        name: "Team A",
-        members: [
-          { id: 1, name: "Member 1", image: null },
-          { id: 2, name: "Member 2", image: "image2.jpg" }
-        ]
-      },
-      {
-        id: 2,
-        name: "Team B",
-        members: [
-          { id: 3, name: "Member 3", image: null },
-          { id: 4, name: "Member 4", image: "image4.jpg" }
-        ]
-      }
-    ]
-  }
-];
-
-// GET API for all organizations
-app.get('/api/organizations', (req, res) => {
-  res.json(organizations);
+// Set up Multer for file upload
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, './uploads'),
+    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
+  }),
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|gif/;
+    const mimeType = fileTypes.test(file.mimetype);
+    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    mimeType && extName ? cb(null, true) : cb('Error: Only images are allowed');
+  },
 });
 
-// POST API to add a new organization
-app.post('/api/organizations', (req, res) => {
+// POST API to add a new organization (storing data in Firebase Firestore)
+app.post('/api/organizations', async (req, res) => {
   const { name, email, location } = req.body;
-  const newOrg = {
-    id: organizations.length + 1,
-    name,
-    email,
-    location,
-    teams: []
-  };
-  organizations.push(newOrg);
-  res.status(201).json(newOrg);
-});
 
-// GET API for a single organization by ID
-app.get('/api/organizations/:id', (req, res) => {
-  const orgId = parseInt(req.params.id);
-  const org = organizations.find(o => o.id === orgId);
-  if (org) {
-    res.json(org);
-  } else {
-    res.status(404).send('Organization not found');
+  try {
+    const newOrgRef = db.collection('organizations').doc();
+    await newOrgRef.set({
+      name,
+      email,
+      location,
+      teams: [],
+    });
+
+    res.status(201).json({ id: newOrgRef.id, name, email, location });
+  } catch (error) {
+    console.error('Error adding organization:', error);
+    res.status(500).json({ error: 'Error adding organization' });
   }
 });
 
-// GET API for all teams of a specific organization
-app.get('/api/organizations/:id/teams', (req, res) => {
-  const orgId = parseInt(req.params.id);
-  const org = organizations.find(o => o.id === orgId);
-  if (org) {
-    res.json(org.teams);
-  } else {
-    res.status(404).send('Organization not found');
+// GET API for all organizations (fetch from Firebase Firestore)
+app.get('/api/organizations', async (req, res) => {
+  try {
+    const organizationsSnapshot = await db.collection('organizations').get();
+    const organizationsList = organizationsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.json(organizationsList);
+  } catch (error) {
+    console.error('Error fetching organizations:', error);
+    res.status(500).json({ error: 'Error fetching organizations' });
   }
 });
 
-// GET API for a single team by ID within an organization
-app.get('/api/organizations/:orgId/teams/:teamId', (req, res) => {
-  const { orgId, teamId } = req.params;
-  const org = organizations.find(o => o.id === parseInt(orgId));
-  if (org) {
-    const team = org.teams.find(t => t.id === parseInt(teamId));
-    if (team) {
-      res.json(team);
-    } else {
-      res.status(404).send('Team not found');
-    }
-  } else {
-    res.status(404).send('Organization not found');
-  }
-});
-
-// GET API for all members of a specific team
-app.get('/api/organizations/:orgId/teams/:teamId/members', (req, res) => {
-  const { orgId, teamId } = req.params;
-  const org = organizations.find(o => o.id === parseInt(orgId));
-  if (org) {
-    const team = org.teams.find(t => t.id === parseInt(teamId));
-    if (team) {
-      res.json(team.members);
-    } else {
-      res.status(404).send('Team not found');
-    }
-  } else {
-    res.status(404).send('Organization not found');
-  }
-});
-
-// GET API for a single member by ID within a team
-app.get('/api/organizations/:orgId/teams/:teamId/members/:memberId', (req, res) => {
+// POST API to upload an image for a specific member (upload to Firebase Storage)
+app.post('/api/organizations/:orgId/teams/:teamId/members/:memberId/upload', upload.single('image'), async (req, res) => {
   const { orgId, teamId, memberId } = req.params;
-  const org = organizations.find(o => o.id === parseInt(orgId));
-  if (org) {
-    const team = org.teams.find(t => t.id === parseInt(teamId));
-    if (team) {
-      const member = team.members.find(m => m.id === parseInt(memberId));
-      if (member) {
-        res.json(member);
-      } else {
-        res.status(404).send('Member not found');
-      }
-    } else {
-      res.status(404).send('Team not found');
+
+  try {
+    const orgRef = db.collection('organizations').doc(orgId);
+    const orgDoc = await orgRef.get();
+
+    if (!orgDoc.exists) {
+      return res.status(404).send('Organization not found');
     }
-  } else {
-    res.status(404).send('Organization not found');
+
+    const team = orgDoc.data().teams.find(t => t.id === parseInt(teamId));
+    if (!team) {
+      return res.status(404).send('Team not found');
+    }
+
+    const member = team.members.find(m => m.id === parseInt(memberId));
+    if (!member) {
+      return res.status(404).send('Member not found');
+    }
+
+    // Upload image to Firebase Storage
+    const file = req.file;
+    const fileRef = storage.ref().child(`members/${orgId}/${teamId}/${memberId}/${file.filename}`);
+    await fileRef.put(file.buffer);
+
+    const imageUrl = await fileRef.getDownloadURL();
+
+    // Update member with the image URL
+    const memberIndex = team.members.findIndex(m => m.id === parseInt(memberId));
+    team.members[memberIndex].image = imageUrl;
+
+    // Update the organization data in Firestore
+    await orgRef.update({
+      teams: orgDoc.data().teams,
+    });
+
+    res.status(200).json({ message: 'Image uploaded successfully', image: imageUrl });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ error: 'Error uploading image' });
   }
 });
 
-// DELETE API to delete an organization by ID
-app.delete('/api/organizations/:id', (req, res) => {
-  const orgId = parseInt(req.params.id);
-  const orgIndex = organizations.findIndex(o => o.id === orgId);
-  
-  if (orgIndex === -1) {
-    return res.status(404).send('Organization not found');
-  }
+// DELETE API to delete an organization (delete from Firebase Firestore)
+app.delete('/api/organizations/:id', async (req, res) => {
+  const orgId = req.params.id;
 
-  // Remove the organization from the list
-  organizations.splice(orgIndex, 1);
-  res.status(200).json({ message: 'Organization deleted successfully' });
+  try {
+    const orgRef = db.collection('organizations').doc(orgId);
+    const orgDoc = await orgRef.get();
+
+    if (!orgDoc.exists) {
+      return res.status(404).send('Organization not found');
+    }
+
+    // Delete the organization from Firestore
+    await orgRef.delete();
+
+    res.status(200).json({ message: 'Organization deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting organization:', error);
+    res.status(500).json({ error: 'Error deleting organization' });
+  }
+});
+
+// POST API to add a new team to an organization (add to Firebase Firestore)
+app.post('/api/organizations/:orgId/teams', async (req, res) => {
+  const { orgId } = req.params;
+  const { name } = req.body;
+
+  try {
+    const orgRef = db.collection('organizations').doc(orgId);
+    const orgDoc = await orgRef.get();
+
+    if (!orgDoc.exists) {
+      return res.status(404).send('Organization not found');
+    }
+
+    const teamId = orgDoc.data().teams.length + 1;
+    const newTeam = { id: teamId, name, members: [] };
+
+    // Add the new team to the organization
+    await orgRef.update({
+      teams: [...orgDoc.data().teams, newTeam],
+    });
+
+    res.status(201).json({ message: 'Team added successfully', team: newTeam });
+  } catch (error) {
+    console.error('Error adding team:', error);
+    res.status(500).json({ error: 'Error adding team' });
+  }
+});
+
+// POST API to add a new member to a team (add to Firebase Firestore)
+app.post('/api/organizations/:orgId/teams/:teamId/members', async (req, res) => {
+  const { orgId, teamId } = req.params;
+  const { name } = req.body;
+
+  try {
+    const orgRef = db.collection('organizations').doc(orgId);
+    const orgDoc = await orgRef.get();
+
+    if (!orgDoc.exists) {
+      return res.status(404).send('Organization not found');
+    }
+
+    const team = orgDoc.data().teams.find(t => t.id === parseInt(teamId));
+    if (!team) {
+      return res.status(404).send('Team not found');
+    }
+
+    const memberId = team.members.length + 1;
+    const newMember = { id: memberId, name, image: null };
+
+    // Add the new member to the team
+    team.members.push(newMember);
+
+    // Update the team in Firestore
+    await orgRef.update({
+      teams: orgDoc.data().teams,
+    });
+
+    res.status(201).json({ message: 'Member added successfully', member: newMember });
+  } catch (error) {
+    console.error('Error adding member:', error);
+    res.status(500).json({ error: 'Error adding member' });
+  }
 });
 
 // Start the server on port 5001
