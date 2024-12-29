@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TeamList from './TeamList';
-import './OrganizationList.css';
+import './OrganizationList.css'; // Import the beautified CSS file
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -31,7 +31,7 @@ const OrganizationList = () => {
         location,
         teams: []
       };
-      setOrganizations((prevOrgs) => [newOrg, ...prevOrgs]); // Add new org at the top of the list
+      setOrganizations((prevOrgs) => [newOrg, ...prevOrgs]); // Add new org at the top
 
       // Now make the POST request to the backend
       axios.post('http://localhost:5001/api/organizations', { name, email, location })
@@ -50,15 +50,41 @@ const OrganizationList = () => {
     }
   };
 
+  const deleteOrganization = (id) => {
+    if (window.confirm("Are you sure you want to delete this organization?")) {
+      // Optimistic UI update: Remove the organization immediately from the list
+      setOrganizations(prevOrgs => prevOrgs.filter(org => org.id !== id));
+
+      // Send DELETE request to backend
+      axios.delete(`http://localhost:5001/api/organizations/${id}`)
+        .then(() => {
+          console.log("Organization deleted successfully");
+        })
+        .catch(error => {
+          console.error('Error deleting organization:', error);
+          // Revert the optimistic update if the API request fails
+          setOrganizations(prevOrgs => [...prevOrgs, organizations.find(org => org.id === id)]);
+        });
+    }
+  };
+
   return (
-    <div>
-      <h2>Organizations</h2>
-      <button onClick={addOrganization}>Add Organization</button>
-      <ul>
+    <div className="organization-list-container">
+      <h2 className="title">Organizations</h2>
+      <button className="add-org-button" onClick={addOrganization}>Add Organization</button>
+      <ul className="organization-list">
         {organizations.map((org) => (
-          <li key={org.id}>
-            <strong>{org.name}</strong> - {org.email} ({org.location})
+          <li key={org.id} className="organization-item">
+            <div className="organization-info">
+              <strong>{org.name}</strong> - {org.email} ({org.location})
+            </div>
             <TeamList teams={org.teams} orgIndex={organizations.indexOf(org)} setOrganizations={setOrganizations} />
+            {/* <button
+              className="delete-org-button"
+              onClick={() => deleteOrganization(org.id)}
+            >
+              Delete
+            </button> */}
           </li>
         ))}
       </ul>

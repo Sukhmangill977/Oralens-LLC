@@ -130,6 +130,20 @@ app.get('/api/organizations/:orgId/teams/:teamId/members/:memberId', (req, res) 
   }
 });
 
+// DELETE API to delete an organization by ID
+app.delete('/api/organizations/:id', (req, res) => {
+  const orgId = parseInt(req.params.id);
+  const orgIndex = organizations.findIndex(o => o.id === orgId);
+  
+  if (orgIndex === -1) {
+    return res.status(404).send('Organization not found');
+  }
+
+  // Remove the organization from the list
+  organizations.splice(orgIndex, 1);
+  res.status(200).json({ message: 'Organization deleted successfully' });
+});
+
 // Start the server on port 5001
 app.listen(5001, () => {
   console.log('Backend server is running on http://localhost:5001');
