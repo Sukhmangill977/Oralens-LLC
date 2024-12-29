@@ -36,12 +36,12 @@ let organizations = [
   }
 ];
 
-// GET API for organizations
+// GET API for all organizations
 app.get('/api/organizations', (req, res) => {
   res.json(organizations);
 });
 
-// POST API to add an organization
+// POST API to add a new organization
 app.post('/api/organizations', (req, res) => {
   const { name, email, location } = req.body;
   const newOrg = {
@@ -55,12 +55,76 @@ app.post('/api/organizations', (req, res) => {
   res.status(201).json(newOrg);
 });
 
-// GET API for a single organization's teams and members
+// GET API for a single organization by ID
 app.get('/api/organizations/:id', (req, res) => {
   const orgId = parseInt(req.params.id);
   const org = organizations.find(o => o.id === orgId);
   if (org) {
     res.json(org);
+  } else {
+    res.status(404).send('Organization not found');
+  }
+});
+
+// GET API for all teams of a specific organization
+app.get('/api/organizations/:id/teams', (req, res) => {
+  const orgId = parseInt(req.params.id);
+  const org = organizations.find(o => o.id === orgId);
+  if (org) {
+    res.json(org.teams);
+  } else {
+    res.status(404).send('Organization not found');
+  }
+});
+
+// GET API for a single team by ID within an organization
+app.get('/api/organizations/:orgId/teams/:teamId', (req, res) => {
+  const { orgId, teamId } = req.params;
+  const org = organizations.find(o => o.id === parseInt(orgId));
+  if (org) {
+    const team = org.teams.find(t => t.id === parseInt(teamId));
+    if (team) {
+      res.json(team);
+    } else {
+      res.status(404).send('Team not found');
+    }
+  } else {
+    res.status(404).send('Organization not found');
+  }
+});
+
+// GET API for all members of a specific team
+app.get('/api/organizations/:orgId/teams/:teamId/members', (req, res) => {
+  const { orgId, teamId } = req.params;
+  const org = organizations.find(o => o.id === parseInt(orgId));
+  if (org) {
+    const team = org.teams.find(t => t.id === parseInt(teamId));
+    if (team) {
+      res.json(team.members);
+    } else {
+      res.status(404).send('Team not found');
+    }
+  } else {
+    res.status(404).send('Organization not found');
+  }
+});
+
+// GET API for a single member by ID within a team
+app.get('/api/organizations/:orgId/teams/:teamId/members/:memberId', (req, res) => {
+  const { orgId, teamId, memberId } = req.params;
+  const org = organizations.find(o => o.id === parseInt(orgId));
+  if (org) {
+    const team = org.teams.find(t => t.id === parseInt(teamId));
+    if (team) {
+      const member = team.members.find(m => m.id === parseInt(memberId));
+      if (member) {
+        res.json(member);
+      } else {
+        res.status(404).send('Member not found');
+      }
+    } else {
+      res.status(404).send('Team not found');
+    }
   } else {
     res.status(404).send('Organization not found');
   }

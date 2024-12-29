@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TeamList from './TeamList';
+import './OrganizationList.css';
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);

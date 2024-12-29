@@ -1,0 +1,108 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Background Styles */
+  .home-page {
+    display: flex;
+    justify-content: center;
+    background-image: url('https://i.pinimg.com/736x/9d/47/82/9d4782cf7de149473a0db490099f6d4d.jpg');
+    align-items: center;
+    height: 100vh;
+    
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Overlay for better text visibility */
+  .home-page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay to enhance text visibility */
+    z-index: 1;
+  }
+  
+  /* Content Box Styling */
+  .content-box {
+    text-align: center;
+    color: #fff;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.7); /* Black with slight transparency */
+    border-radius: 15px;
+    padding: 40px 60px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 1s ease-out;
+  }
+  
+  /* Heading Styling */
+  .content-box h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #00b3b3; /* Blue-green color for headings */
+    animation: fadeInUp 1s ease-out;
+  }
+  
+  /* Paragraph Styling */
+  .content-box p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    opacity: 0.9;
+    color: #a1a1a1; /* Lighter text color */
+    animation: fadeInUp 1.5s ease-out;
+  }
+  
+  /* Button Styling */
+  .dashboard-button {
+    font-size: 1.1rem;
+    background-color: #2e8b57; /* Green button */
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 2s ease-out;
+  }
+  
+  .dashboard-button:hover {
+    background-color: #228b22; /* Darker green on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* FadeIn Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* FadeInUp Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
